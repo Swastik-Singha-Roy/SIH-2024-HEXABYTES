@@ -12,7 +12,7 @@ import os
 app = Flask(__name__)
 
 # Razorpay Configuration
-razorpay_client = razorpay.Client(auth=("rzp_live_9xswglfHmly68X", "p79lYeYKA6lwLvWM5QbLamiY"))
+razorpay_client = razorpay.Client(auth=("", ""))
 
 # Configure session management
 app.config['SECRET_KEY'] = 'your_secret_key'
