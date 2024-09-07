@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        /* General styling */
+        /* General styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #27ae60;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url(/imagesBOT/pexels-charlotte-may-5825359.jpg); 
+    background-blend-mode: multiply; 
+    background-size: cover; 
+    background-position: center;
+    animation: backgroundFade 3s ease-in-out infinite alternate;
+}
+
+#chat-container {
+    background-color: #575353dd;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.15);
+    width: 90%; /* Increased width */
+    max-width: 600px; /* Increased maximum width */
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: containerAppear 1s ease-in-out;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#chat-box {
+    flex-grow: 1;
+    background-color: #F3F4F5;
+    border-radius: 8px;
+    padding: 15px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 1s ease-in-out;
+}
+
+#chat-box h1 {
+    text-align: center;
+    font-size: 20px;
+    color:  #333;
+    margin-bottom: 10px;
+    animation: slideIn 1s ease-in-out;
+    font-weight: bold;
+}
+
+#chat-box p {
+    margin: 8px 0;
+    animation: messageFade 0.5s ease-in-out;
+}
+
+/* Input and button section */
+#input-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 12px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+    background-color: #fafafa;
+    margin-right: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+#user-input:focus {
+    border-color: #3498db;
+    box-shadow: 0px 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.chat-button {
+    border: none;
+    background-color: beige;
+    color: white;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    animation: buttonBounce 2s infinite;
+}
+
+.chat-button:hover {
+    background-color: gold;
+    transform: scale(1.1);
+}
+
+.icons {
+    height: 20px;
+    transition: transform 0.3s;
+}
+
+.icons:hover {
+    transform: rotate(360deg);
+}
+
+.items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Hover text */
+.container {
+    position: relative;
+    display: inline-block;
+}
+
+.hover-text {
+    position: absolute;
+    bottom: 100%; 
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.container:hover .hover-text {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -10px);
+}
+
+/* Other hover texts */
+.hover-voice, .hover-ticket {
+    position: absolute;
+    top: -40px; 
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.container:hover .hover-voice, .container:hover .hover-ticket {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -10px);
+}
+
+/* Payment button */
+#payNow {
+    background-color: #27ae60;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: background-color 0.3s, transform 0.3s;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px rgba(39, 174, 96, 0.3);
+}
+
+#payNow:hover {
+    background-color: #2ecc71;
+    transform: scale(1.05);
+}
+
+#payNowSection {
+    display: none;
+    text-align: center;
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes messageFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes buttonBounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-5px);
+    }
+    60% {
+        transform: translateY(-3px);
+    }
+}
+
+@keyframes backgroundFade {
+    from {
+        filter: brightness(1);
+    }
+    to {
+        filter: brightness(0.9);
+    }
+}
+
+@keyframes containerAppear {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-box">
+            <h1>Welcome to InstaTix!</h1>
+        </div>
+
+        <div id="input-section">
+            <input type="text" id="user-input" autocomplete="off" placeholder="Type a message...">
+            <div class="items">
+            <div class="container">
+                <div class="hover-text">Send Message</div>
+                <button class="chat-button" id="sendMessage">📤</button>
+                </div>
+            <div class="container">
+                <div class="hover-voice">Voice Input</div>
+            <button class="chat-button" id="voiceInputButton">🎤</button>
+        </div>
+                
+            </div>
+            <div class="container">
+                <div class="hover-ticket">Book Ticket</div>
+                <button class="chat-button" id="bookTicket">🎟️</button>
+            
+           
+            </div>
+            </div>
+        <div id="payNowSection">
+            <button id="payNow">Pay Now</button>
+        </div>
+    </div>
+
+    <script>
+        // Voice output related variables and functions
+        let voices = [];
+
+        function populateVoiceList() {
+            voices = speechSynthesis.getVoices();
+        }
+
+        function speakOutLoud(text) {
+            const synth = window.speechSynthesis;
+            const utterThis = new SpeechSynthesisUtterance(text);
+            const selectedVoice = voices.find(voice => voice.name === 'Google UK English Male') || voices[0];
+
+            utterThis.voice = selectedVoice;
+            utterThis.pitch = 2;
+            utterThis.rate = 1;
+            synth.speak(utterThis);
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+
+        populateVoiceList();
+
+        // Function to auto-scroll chat to the bottom
+        function scrollToBottom() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Send text message function
+        function sendMessage(message) {
+            if (message.trim() === "") {
+                return;
+            }
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const chatBox = document.getElementById('chat-box');
+                chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+                chatBox.innerHTML += `<p><strong>InstaTix:</strong> ${data.response}</p>`;
+
+                speakOutLoud(data.response);
+
+                document.getElementById('user-input').value = "";
+                scrollToBottom();
+
+                if (data.response.includes("Pay Now")) {
+                    document.getElementById("payNowSection").style.display = "block";
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        document.getElementById('sendMessage').addEventListener('click', function() {
+            const message = document.getElementById('user-input').value;
+            sendMessage(message);
+        });
+
+        document.getElementById('bookTicket').addEventListener('click', function() {
+            sendMessage('Book a ticket');
+        });
+
+        // Voice input setup
+        const voiceInputButton = document.getElementById('voiceInputButton');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+
+        let recognitionTimeout;
+
+        recognition.onresult = function(event) {
+            let transcript = event.results[0][0].transcript;
+            transcript = transcript.replace(/\./g, '');
+
+            document.getElementById('user-input').value = transcript;
+            sendMessage(transcript);
+
+            recognition.stop();
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            recognition.stop();
+        };
+
+        recognition.onend = function() {
+            clearTimeout(recognitionTimeout);
+        };
+
+        voiceInputButton.addEventListener('click', function() {
+            recognition.start();
+            recognitionTimeout = setTimeout(function() {
+                recognition.stop();
+            }, 5000);
+        });
+
+        // Handle Enter key press for sending messages
+        document.getElementById('user-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const message = document.getElementById('user-input').value;
+                sendMessage(message);
+            }
+        });
+
+        // Payment handling
+        document.getElementById('payNow').addEventListener('click', function () {
+            fetch('/create_order', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                const options = {
+                    "key": "rzp_live_9xswglfHmly68X",
+                    "amount": data.amount,
+                    "currency": "INR",
+                    "name": "InstaTix",
+                    "description": "Ticket Booking",
+                    "order_id": data.id,
+                    "handler": function (response) {
+                        fetch('/payment_verification', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                order_id: data.id,
+                                payment_id: response.razorpay_payment_id,
+                                signature: response.razorpay_signature,
+                            }),
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            alert(data.status);
+                        })
+                        .catch(error => console.error('Error:', error));
+                    }
+                };
+                const rzp1 = new Razorpay(options);
+                rzp1.open();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
